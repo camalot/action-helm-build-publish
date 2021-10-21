@@ -87,5 +87,6 @@ runs:
   - name: "Create Release"
     uses: ncipollo/release-action@v1
     with:
+      allowUpdates: true
       artifacts: "${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz"
-      token: ${{ github.token }}
+      token: ${{ inputs.GITHUB_TOKEN }}
