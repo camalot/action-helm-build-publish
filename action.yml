@@ -18,6 +18,10 @@ inputs:
   ARTIFACTORY_TOKEN:
     description: ''
     required: true
+  GITHUB_TOKEN:
+    required: false
+    default: "${{ github.token }}"
+    description: ''
 outputs:
   chart_version:
     description: "The updated version of the chart"
