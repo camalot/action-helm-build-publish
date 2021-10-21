@@ -81,7 +81,7 @@ runs:
     with:
       add: "Chart.yaml"
       message: ":robot: Version Updated :robot:"
-      tag: "${{ needs.version.outputs.tag }} --force"
+      tag: "${{ steps.semvers.outputs.tag }} --force"
       branch: "${{ inputs.target_ref }}"
   - name: "Create Release"
     uses: ncipollo/release-action@v1
