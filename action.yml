@@ -1,0 +1,77 @@
+name: Helm Build
+description: "Build, Package, and Publish Helm Charts to SRE Artifactory"
+inputs:
+  lint_args:
+    description: "Additional arguments to add to `helm lint`. Example: --set foo=bar"
+    required: false
+    default: ''
+  target_ref:
+    description: "The branch ref to target for the commit change."
+    default: develop
+    required: false
+outputs:
+  chart_version:
+    description: "The updated version of the chart"
+    value: "${{ steps.semvers.outputs.patch }}"
+  chart_tag:
+    description: "The value set for the commit tag"
+    value: "${{ steps.semvers.outputs.v_patch }}"
+  chart_name:
+    description: "The name of the chart that was published"
+    value: "${{ steps.chart.outputs.chart_name }}"
+runs:
+  using: "composite"
+  steps:
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - name: 'Get Previous tag'
+    id: previoustag
+    uses: "WyriHaximus/github-action-get-previous-tag@v1"
+    with:
+      fallback: 0.1.0 # Optional fallback tag to use when no tag can be found
+  - name: 'Get next minor version'
+    id: semvers
+    uses: "WyriHaximus/github-action-next-semvers@v1"
+    with:
+      version: ${{ steps.previoustag.outputs.tag }}
+  - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
+    shell: bash
+  - uses: actions/checkout@v2
+    with:
+      ref: "${{ inputs.target_ref }}"
+  - uses: frenck/action-setup-yq@v1.0.0
+  - name: Helm Lint
+    uses: WyriHaximus/github-action-helm3@v2
+    with:
+      exec: 'helm lint --strict ${{ inputs.lint_args }} .'
+  - name: Set Chart Version
+    id: chart
+    shell: bash
+    run: |
+      yq eval -i '.version = "${{ needs.version.outputs.app_version }}"' Chart.yaml;
+      CHART_NAME="$(yq eval '.name' Chart.yaml)";
+      CHART_VERSION="$(yq eval '.version' Chart.yaml)";
+      echo ::set-output name=chart_name::${CHART_NAME}
+      echo ::set-output name=chart_version::${CHART_VERSION}
+  - name: "Publish Helm Chart"
+    shell: bash
+    run: |
+      helm plugin install --version 1.0.1 https://github.com/belitre/helm-push-artifactory-plugin;
+      helm repo add artifactory https://artifactory.sretools.io/artifactory/helm --username "${{ secrets.SRE_ARTIFACTORY_USER}}" --password "${{ secrets.SRE_ARTIFACTORY_TOKEN }}";
+      helm repo update;
+      helm dependency update;
+      helm package .
+      helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex
+  - name: "Push Version Change"
+    uses: EndBug/add-and-commit@v7
+    with:
+      add: "Chart.yaml"
+      message: ":robot: Version Updated :robot:"
+      tag: "${{ needs.version.outputs.tag }} --force"
+      branch: "${{ inputs.target_ref }}"
+  - name: "Create Release"
+    uses: ncipollo/release-action@v1
+    with:
+      artifacts: "${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz"
+      token: ${{ github.token }}
