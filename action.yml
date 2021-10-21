@@ -9,6 +9,15 @@ inputs:
     description: "The branch ref to target for the commit change."
     default: develop
     required: false
+  ARTIFACTORY_URL:
+    description: ''
+    required: true
+  ARTIFACTORY_USER:
+    description: ''
+    required: true
+  ARTIFACTORY_TOKEN:
+    description: ''
+    required: true
 outputs:
   chart_version:
     description: "The updated version of the chart"
@@ -49,7 +58,7 @@ runs:
     id: chart
     shell: bash
     run: |
-      yq eval -i '.version = "${{ needs.version.outputs.app_version }}"' Chart.yaml;
+      yq eval -i '.version = "${{ steps.semvers.outputs.patch }}"' Chart.yaml;
       CHART_NAME="$(yq eval '.name' Chart.yaml)";
       CHART_VERSION="$(yq eval '.version' Chart.yaml)";
       echo ::set-output name=chart_name::${CHART_NAME}
@@ -58,7 +67,7 @@ runs:
     shell: bash
     run: |
       helm plugin install --version 1.0.1 https://github.com/belitre/helm-push-artifactory-plugin;
-      helm repo add artifactory "${{ secrets.SRE_ARTIFACTORY_HELM_URL }}/helm" --username "${{ secrets.SRE_ARTIFACTORY_USER}}" --password "${{ secrets.SRE_ARTIFACTORY_TOKEN }}";
+      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/helm" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}";
       helm repo update;
       helm dependency update;
       helm package .
