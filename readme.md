@@ -1,3 +1,6 @@
+This is for `iManage SRE` to build, package, and publish the helm chart to artifactory.
+
+
 # INPUTS
 
 `target_ref`: The target branch ref that the version number change is pushed to.
@@ -13,5 +16,6 @@
 
 This secrets **MUST** exist at either the repo level or the organization level
 
+`SRE_ARTIFACTORY_HELM_URL`: The base url for artifactory
 `SRE_ARTIFACTORY_USER`: The artifactory user
 `SRE_ARTIFACTORY_TOKEN`: The artifactory api token

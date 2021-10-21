@@ -58,7 +58,7 @@ runs:
     shell: bash
     run: |
       helm plugin install --version 1.0.1 https://github.com/belitre/helm-push-artifactory-plugin;
-      helm repo add artifactory https://artifactory.sretools.io/artifactory/helm --username "${{ secrets.SRE_ARTIFACTORY_USER}}" --password "${{ secrets.SRE_ARTIFACTORY_TOKEN }}";
+      helm repo add artifactory "${{ secrets.SRE_ARTIFACTORY_HELM_URL }}/helm" --username "${{ secrets.SRE_ARTIFACTORY_USER}}" --password "${{ secrets.SRE_ARTIFACTORY_TOKEN }}";
       helm repo update;
       helm dependency update;
       helm package .
