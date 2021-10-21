@@ -90,3 +90,4 @@ runs:
       allowUpdates: true
       artifacts: "${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz"
       token: ${{ inputs.GITHUB_TOKEN }}
+      tag: "${{ steps.semvers.outputs.v_patch }}"
