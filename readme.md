@@ -18,6 +18,8 @@ This is for `iManage SRE` to build, package, and publish the helm chart to artif
 
 # EXAMPLES
 
+This will update the chart version, push the changed version to the repo, package the chart, and push it to artifactory. 
+
 ```yaml
 name: Build Helm Chart
 on:
