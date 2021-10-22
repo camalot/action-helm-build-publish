@@ -27,27 +27,7 @@ jobs:
       with:
         version: ${{ steps.previoustag.outputs.tag }}
 
-    - uses: jungwinter/split@v2
-      id: split
-      with:
-        separator: '.'
-        msg: ${{ steps.semvers.outputs.patch }}
-
-    - name: Create the Major Version Tag
-      uses: negz/create-tag@v1
-      with:
-        version: 'v${{ steps.split.outputs._0 }}'
-        message: ''
-        token: ${{ github.token }}
-
-    - name: Create the Major.Minor Version Tag
-      uses: negz/create-tag@v1
-      with:
-        version: 'v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}'
-        message: ''
-        token: ${{ github.token }}
-
-    - name: Create the Full Version Tag
+    - name: Create the Version Tag
       uses: negz/create-tag@v1
       with:
         version: 'v${{ steps.semvers.outputs.v_patch }}'
