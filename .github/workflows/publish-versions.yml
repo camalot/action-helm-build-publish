@@ -26,63 +26,40 @@ jobs:
       uses: "WyriHaximus/github-action-next-semvers@v1"
       with:
         version: ${{ steps.previoustag.outputs.tag }}
+
     - uses: jungwinter/split@v2
       id: split
       with:
         separator: '.'
         msg: ${{ steps.semvers.outputs.patch }}
-    - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
-      shell: bash
-    - name: Create the latest Tag
-      uses: actions/github-script@v3
+
+    - name: Create latest Tag
+      uses: negz/create-tag@v1
       with:
-        github-token: "${{ github.token }}"
-        script: |
-          github.git.updateRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/latest"
-          })
-    - name: Create the Full Tag
-      uses: actions/github-script@v3
-      with:
-        github-token: "${{ github.token }}"
-        script: |
-          github.git.updateRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/${{ steps.semvers.outputs.v_patch }}"
-          })
+        version: 'latest'
+        message: ''
+        token: ${{ github.token }}
+
     - name: Create the Major Version Tag
-      uses: actions/github-script@v3
+      uses: negz/create-tag@v1
       with:
-        github-token: "${{ github.token }}"
-        script: |
-          github.git.updateRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/v${{ steps.split.outputs._0 }}"
-          })
+        version: 'v${{ steps.split.outputs._0 }}'
+        message: ''
+        token: ${{ github.token }}
+
     - name: Create the Major.Minor Version Tag
-      uses: actions/github-script@v3
+      uses: negz/create-tag@v1
       with:
-        github-token: "${{ github.token }}"
-        script: |
-          github.git.updateRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}"
-          })
-    - name: Create the Full Tag
-      uses: actions/github-script@v3
+        version: 'v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}'
+        message: ''
+        token: ${{ github.token }}
+
+    - name: Create the Full Version Tag
+      uses: negz/create-tag@v1
       with:
-        github-token: "${{ github.token }}"
-        script: |
-          github.git.updateRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/${{ steps.semvers.outputs.v_patch }}"
-          })
+        version: 'v${{ steps.semvers.outputs.v_patch }}'
+        message: ''
+        token: ${{ github.token }}
 
     - name: Merge develop -> main
       uses: devmasx/merge-branch@v1.3.1
