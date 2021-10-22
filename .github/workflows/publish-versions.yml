@@ -10,6 +10,7 @@ on:
     - closed
 jobs:
   publish:
+    if: github.event.pull_request.merged == true || github.event == 'push'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -72,6 +73,17 @@ jobs:
             repo: context.repo.repo,
             ref: "refs/tags/v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}"
           })
+    - name: Create the Full Tag
+      uses: actions/github-script@v3
+      with:
+        github-token: "${{ github.token }}"
+        script: |
+          github.git.updateRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ steps.semvers.outputs.v_patch }}"
+          })
+
     - name: Merge develop -> main
       uses: devmasx/merge-branch@v1.3.1
       with:
