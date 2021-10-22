@@ -1,5 +1,5 @@
 name: Helm Build
-description: "Build, Package, and Publish Helm Charts to SRE Artifactory"
+description: "Build, Package, and Publish Helm Charts to Artifactory"
 inputs:
   lint_args:
     description: "Additional arguments to add to `helm lint`. Example: --set foo=bar"
@@ -10,18 +10,18 @@ inputs:
     default: develop
     required: false
   ARTIFACTORY_URL:
-    description: ''
+    description: 'The base url to artifactory.'
     required: true
   ARTIFACTORY_USER:
-    description: ''
+    description: 'The artifactory login user'
     required: true
   ARTIFACTORY_TOKEN:
-    description: ''
+    description: 'The artifactory login token'
     required: true
   GITHUB_TOKEN:
     required: false
     default: "${{ github.token }}"
-    description: ''
+    description: 'The github token'
 outputs:
   chart_version:
     description: "The updated version of the chart"
