@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: develop
-      - uses: camalot/action-helm-build-publish@v1
+      - uses: camalot/action-helm-build-publish@v1.0.2
         id: helm_build
         with:
           ARTIFACTORY_URL: "${{ secrets.SRE_ARTIFACTORY_URL }}"
