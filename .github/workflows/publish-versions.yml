@@ -28,12 +28,11 @@ jobs:
         version: ${{ steps.previoustag.outputs.tag }}
 
     - name: Create the Version Tag
-      uses: negz/create-tag@v1
+      uses: mathieudutour/github-tag-action@v5.6
       with:
-        version: '${{ steps.semvers.outputs.patch }}'
-        message: ''
-        token: ${{ github.token }}
-
+        github_token: ${{ github.token }}
+        custom_tag: "${{ steps.semvers.outputs.v_patch }}"
+  
     - name: Merge develop -> main
       uses: devmasx/merge-branch@v1.3.1
       with:
