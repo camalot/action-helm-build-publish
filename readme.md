@@ -1,14 +1,14 @@
-This is for `iManage SRE` to build, package, and publish the helm chart to artifactory.
+This will build, package, and publish the helm chart to artifactory.
 
 
 # INPUTS
 
-`target_ref`: (Optional) The target branch ref that the version number change is pushed to. (default `develop`)
-`lint_args`: (Optional) Additional arguments to pass to `helm lint` (default `''`)
-`GITHUB_TOKEN`: (Optional) github token (default `github.token`)
-`ARTIFACTORY_URL`: (Required) URL for artifactory.
-`ARTIFACTORY_USER`: (Required) Artifactory login user
-`ARTIFACTORY_TOKEN`: (Required) Artifactory login api token
+`target_ref`: (Optional) The target branch ref that the version number change is pushed to. (default `develop`)  
+`lint_args`: (Optional) Additional arguments to pass to `helm lint` (default `''`)  
+`GITHUB_TOKEN`: (Optional) github token (default `github.token`)  
+`ARTIFACTORY_URL`: (Required) URL for artifactory.  
+`ARTIFACTORY_USER`: (Required) Artifactory login user  
+`ARTIFACTORY_TOKEN`: (Required) Artifactory login api token  
 # OUTPUTS
 
 `chart_version`: The chart version
