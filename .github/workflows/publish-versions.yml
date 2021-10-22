@@ -33,13 +33,6 @@ jobs:
         separator: '.'
         msg: ${{ steps.semvers.outputs.patch }}
 
-    - name: Create latest Tag
-      uses: negz/create-tag@v1
-      with:
-        version: 'latest'
-        message: ''
-        token: ${{ github.token }}
-
     - name: Create the Major Version Tag
       uses: negz/create-tag@v1
       with:
