@@ -32,7 +32,8 @@ jobs:
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.semvers.outputs.v_patch }}"
-  
+        tag_prefix: ''
+
     - name: Merge develop -> main
       uses: devmasx/merge-branch@v1.3.1
       with:
