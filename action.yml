@@ -9,6 +9,10 @@ inputs:
     description: "The branch ref to target for the commit change."
     default: develop
     required: false
+  plugin_version:
+    description: "The version of the helm artifactory push plugin"
+    default: '1.0.1'
+    required: false
   ARTIFACTORY_URL:
     description: 'The base url to artifactory.'
     required: true
@@ -18,6 +22,10 @@ inputs:
   ARTIFACTORY_TOKEN:
     description: 'The artifactory login token'
     required: true
+  ARTIFACTORY_REPO_NAME:
+    description: 'The name of the helm repo in artifactory'
+    required: false
+    default: "helm"
   GITHUB_TOKEN:
     required: false
     default: "${{ github.token }}"
@@ -71,8 +79,8 @@ runs:
   - name: "Publish Helm Chart"
     shell: bash
     run: |
-      helm plugin install --version 1.0.1 https://github.com/belitre/helm-push-artifactory-plugin;
-      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/helm" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}";
+      helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin;
+      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}";
       helm repo update;
       helm dependency update;
       helm package .
