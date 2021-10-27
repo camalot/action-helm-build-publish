@@ -6,7 +6,7 @@ inputs:
     required: false
     default: ''
   lint_strict:
-    description: "If it should use --strict flag for linting (default: true)"
+    description: "Should action use --strict flag for linting (default: true)"
     required: false
     default: 'true'
   target_ref:
