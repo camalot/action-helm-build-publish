@@ -32,14 +32,23 @@ jobs:
       with:
         string: ${{ steps.semvers.outputs.patch }}
         split-by: '.'
-
+    - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      with:
+        tag_name: "v${{ steps.split.outputs._0 }}" # tag name to delete
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Create the Major Version Tag
       uses: mathieudutour/github-tag-action@v5.6
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}"
         tag_prefix: 'v'
-        
+    - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      with:
+        tag_name: "v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}" # tag name to delete
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: Create the Major.Minor Version Tag
       uses: mathieudutour/github-tag-action@v5.6
       with:

@@ -5,6 +5,10 @@ inputs:
     description: "Additional arguments to add to `helm lint`. Example: --set foo=bar"
     required: false
     default: ''
+  lint_strict:
+    description: "Should action use --strict flag for linting (default: true)"
+    required: false
+    default: 'true'
   target_ref:
     description: "The branch ref to target for the commit change."
     default: develop
@@ -62,10 +66,15 @@ runs:
     with:
       ref: "${{ inputs.target_ref }}"
   - uses: frenck/action-setup-yq@v1.0.0
+  - shell: bash
+    id: lint_strict
+    run: |
+      LINT_STRICT_FLAG=$([[ '${{ inputs.lint_strict }}' == 'true' ]] && echo -n "--strict" || echo -n "")
+      echo ::set-output name=flag::${LINT_STRICT_FLAG}
   - name: Helm Lint
     uses: WyriHaximus/github-action-helm3@v2
     with:
-      exec: 'helm lint --strict ${{ inputs.lint_args }} .'
+      exec: 'helm lint ${{ steps.lint_strict.outputs.flag }} ${{ inputs.lint_args }} .'
   - name: Set Chart Version
     id: chart
     shell: bash
