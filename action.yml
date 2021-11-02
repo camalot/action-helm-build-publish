@@ -97,7 +97,7 @@ runs:
       CHART_VERSION="$(yq eval '.version' Chart.yaml)";
       echo ::set-output name=chart_name::${CHART_NAME}
       echo ::set-output name=chart_version::${CHART_VERSION}
-  - name: "Publish Helm Chart"
+  - name: "Lint and Publish Helm Chart"
     shell: bash
     run: |
       helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin --debug;
