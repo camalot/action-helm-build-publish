@@ -9,6 +9,10 @@ inputs:
     description: "Should action use --strict flag for linting (default: true)"
     required: false
     default: 'true'
+  template_lint:
+    description: "Should action use 'helm template lint' vs 'helm lint' (default: false)"
+    required: false
+    default: 'false'
   target_ref:
     description: "The branch ref to target for the commit change."
     default: develop
@@ -67,14 +71,16 @@ runs:
       ref: "${{ inputs.target_ref }}"
   - uses: frenck/action-setup-yq@v1.0.0
   - shell: bash
-    id: lint_strict
+    id: lint_options
     run: |
       LINT_STRICT_FLAG=$([[ '${{ inputs.lint_strict }}' == 'true' ]] && echo -n "--strict" || echo -n "")
-      echo ::set-output name=flag::${LINT_STRICT_FLAG}
+      echo ::set-output name=strict::${LINT_STRICT_FLAG}
+      TEMPLATE_LINT=$([[ '${{ inputs.template_lint }}' == 'true' ]] && echo -n "template" || echo -n "")
+      echo ::set-output name=template::${TEMPLATE_LINT}
   - name: Helm Lint
     uses: WyriHaximus/github-action-helm3@v2
     with:
-      exec: 'helm lint ${{ steps.lint_strict.outputs.flag }} ${{ inputs.lint_args }} .'
+      exec: 'helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .'
   - name: Set Chart Version
     id: chart
     shell: bash
