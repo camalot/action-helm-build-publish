@@ -13,6 +13,7 @@ This will build, package, and publish the helm chart to artifactory.
 `target_ref`: (Optional) The target branch ref that the version number change is pushed to. (default `develop`)  
 `lint_args`: (Optional) Additional arguments to pass to `helm lint` (default `''`)
 `lint_strict`: (Optional) Should it use `--strict` flag for linting (default `true`)
+`template_lint`: (Optional) Should it use `helm template lint` vs `helm lint` (default `false`)
 `plugin_version`: (Optional) The version of the helm push artifactory plugin (default `1.0.1`)
 `GITHUB_TOKEN`: (Optional) github token (default `github.token`)  
 `ARTIFACTORY_URL`: (Required) URL for artifactory.  
