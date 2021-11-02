@@ -104,7 +104,6 @@ runs:
       helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}"  --debug;
       helm repo update --debug;
       helm dependency update --debug;
-      helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
       helm package --debug .
       helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex --debug
   - name: "Push Version Change"
