@@ -77,11 +77,16 @@ runs:
       echo ::set-output name=strict::${LINT_STRICT_FLAG}
       TEMPLATE_LINT=$([[ '${{ inputs.template_lint }}' == 'true' ]] && echo -n "template" || echo -n "")
       echo ::set-output name=template::${TEMPLATE_LINT}
-  - name: Helm Lint
-    uses: WyriHaximus/github-action-helm3@v2
-    with:
-      exec: |
-        helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
+  - name: Update repo and Helm Lint
+    shell: bash
+    run: |
+      helm repo update;
+      helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
+  # - name: Helm Lint
+  #   uses: WyriHaximus/github-action-helm3@v2
+  #   with:
+  #     exec: |
+  #       helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
   - name: Set Chart Version
     id: chart
     shell: bash
