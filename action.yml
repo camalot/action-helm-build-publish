@@ -80,7 +80,8 @@ runs:
   - name: Helm Lint
     uses: WyriHaximus/github-action-helm3@v2
     with:
-      exec: 'helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .'
+      exec: |
+        helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
   - name: Set Chart Version
     id: chart
     shell: bash
