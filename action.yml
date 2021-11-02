@@ -88,12 +88,12 @@ runs:
   - name: "Publish Helm Chart"
     shell: bash
     run: |
-      helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin;
-      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}";
-      helm repo update;
-      helm dependency update;
-      helm package .
-      helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex
+      helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin --debug;
+      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}"  --debug;
+      helm repo update --debug;
+      helm dependency update --debug;
+      helm package --debug .
+      helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex --debug
   - name: "Push Version Change"
     uses: EndBug/add-and-commit@v7
     with:
