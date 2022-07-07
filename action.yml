@@ -51,9 +51,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-  - uses: actions/checkout@v2
+  - uses: actions/checkout@v3
     with:
       fetch-depth: 0
+      token: "${{ inputs.GITHUB_TOKEN }}"
   - name: 'Get Previous tag'
     id: previoustag
     uses: "WyriHaximus/github-action-get-previous-tag@v1"
@@ -66,9 +67,10 @@ runs:
       version: ${{ steps.previoustag.outputs.tag }}
   - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
     shell: bash
-  - uses: actions/checkout@v2
+  - uses: actions/checkout@v3
     with:
       ref: "${{ inputs.target_ref }}"
+      token: "${{ inputs.GITHUB_TOKEN }}"
   - uses: frenck/action-setup-yq@v1.0.0
   - shell: bash
     id: lint_options
@@ -107,12 +109,15 @@ runs:
       helm package --debug .
       helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex --debug
   - name: "Push Version Change"
-    uses: EndBug/add-and-commit@v7
+    uses: EndBug/add-and-commit@v9
     with:
       add: "Chart.yaml"
       message: ":robot: Version Updated :robot:"
       tag: "${{ steps.semvers.outputs.v_patch }} --force"
       branch: "${{ inputs.target_ref }}"
+      default_author: github_actions
+      committer_name: GitHub Actions
+      committer_email: actions@github.com
   - name: "Create Release"
     uses: ncipollo/release-action@v1
     with:
