@@ -38,7 +38,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: Create the Major Version Tag
-      uses: mathieudutour/github-tag-action@v5.6
+      uses: mathieudutour/github-tag-action@v6.0
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}"
@@ -50,14 +50,14 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create the Major.Minor Version Tag
-      uses: mathieudutour/github-tag-action@v5.6
+      uses: mathieudutour/github-tag-action@v6.0
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}"
         tag_prefix: 'v'
 
     - name: Create the Version Tag
-      uses: mathieudutour/github-tag-action@v5.6
+      uses: mathieudutour/github-tag-action@v6.0
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.semvers.outputs.v_patch }}"
