@@ -27,7 +27,7 @@ jobs:
       with:
         version: ${{ steps.previoustag.outputs.tag }}
         strict: false
-    - uses: rishabhgupta/split-by@v1
+    - uses: rishabhgupta/split-by@v2
       id: split
       with:
         string: ${{ steps.semvers.outputs.patch }}
