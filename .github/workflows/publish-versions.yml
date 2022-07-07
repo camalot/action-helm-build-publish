@@ -64,7 +64,7 @@ jobs:
         tag_prefix: ''
 
     - name: Merge develop -> main
-      uses: devmasx/merge-branch@v1.3.1
+      uses: devmasx/merge-branch@1.4.0
       with:
         type: now
         from_branch: develop
