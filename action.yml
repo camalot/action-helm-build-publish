@@ -114,7 +114,6 @@ runs:
       add: "Chart.yaml"
       message: ":robot: Version Updated :robot:"
       tag: "${{ steps.semvers.outputs.v_patch }} --force"
-      branch: "${{ inputs.target_ref }}"
       default_author: github_actions
       committer_name: GitHub Actions
       committer_email: actions@github.com
