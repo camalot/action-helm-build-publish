@@ -27,7 +27,7 @@ jobs:
       with:
         version: ${{ steps.previoustag.outputs.tag }}
         strict: false
-    - uses: rishabhgupta/split-by@v1
+    - uses: rishabhgupta/split-by@v2
       id: split
       with:
         string: ${{ steps.semvers.outputs.patch }}
@@ -38,7 +38,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: Create the Major Version Tag
-      uses: mathieudutour/github-tag-action@v5.6
+      uses: mathieudutour/github-tag-action@v6.0
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}"
@@ -64,7 +64,7 @@ jobs:
         tag_prefix: ''
 
     - name: Merge develop -> main
-      uses: devmasx/merge-branch@v1.3.1
+      uses: devmasx/merge-branch@v1.4.0
       with:
         type: now
         from_branch: develop
