@@ -76,19 +76,21 @@ runs:
     id: lint_options
     run: |
       LINT_STRICT_FLAG=$([[ '${{ inputs.lint_strict }}' == 'true' ]] && echo -n "--strict" || echo -n "")
-      echo ::set-output name=strict::${LINT_STRICT_FLAG}
+      # echo ::set-output name=strict_flag::${LINT_STRICT_FLAG}
+      echo LINT_STRICT_FLAG=${LINT_STRICT_FLAG} >> $GITHUB_ENV;
       TEMPLATE_LINT=$([[ '${{ inputs.template_lint }}' == 'true' ]] && echo -n "template" || echo -n "")
-      echo ::set-output name=template::${TEMPLATE_LINT}
+      # echo ::set-output name=template::${TEMPLATE_LINT}
+      echo TEMPLATE_LINT=${TEMPLATE_LINT} >> $GITHUB_ENV;
   # - name: Update repo and Helm Lint
   #   shell: bash
   #   run: |
   #     helm repo update;
-  #     helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
+  #     helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
   # - name: Helm Lint
   #   uses: WyriHaximus/github-action-helm3@v2
   #   with:
   #     exec: |
-  #       helm ${{ steps.lint_options.outputs.template }} lint ${{ steps.lint_options.outputs.strict}} ${{ inputs.lint_args }} .
+  #       helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
   - name: Set Chart Version
     id: chart
     shell: bash
@@ -97,8 +99,10 @@ runs:
       yq eval -i '.version = "${{ steps.semvers.outputs.patch }}"' Chart.yaml;
       CHART_NAME="$(yq eval '.name' Chart.yaml)";
       CHART_VERSION="$(yq eval '.version' Chart.yaml)";
-      echo ::set-output name=chart_name::${CHART_NAME}
-      echo ::set-output name=chart_version::${CHART_VERSION}
+      # echo ::set-output name=chart_name::${CHART_NAME}
+      echo CHART_NAME=${CHART_NAME} >> $GITHUB_ENV;
+      # echo ::set-output name=chart_version::${CHART_VERSION}
+      echo CHART_VERSION=${CHART_VERSION} >> $GITHUB_ENV;
   - name: "Lint and Publish Helm Chart"
     shell: bash
     run: |
@@ -107,7 +111,7 @@ runs:
       helm repo update --debug;
       helm dependency update --debug;
       helm package --debug .
-      helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex --debug
+      helm push-artifactory ${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz artifactory --skip-reindex --debug
   - name: "Push Version Change"
     uses: EndBug/add-and-commit@v9
     with:
@@ -121,6 +125,6 @@ runs:
     uses: ncipollo/release-action@v1
     with:
       allowUpdates: true
-      artifacts: "${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz"
+      artifacts: "${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz"
       token: ${{ inputs.GITHUB_TOKEN }}
       tag: "${{ steps.semvers.outputs.v_patch }}"
