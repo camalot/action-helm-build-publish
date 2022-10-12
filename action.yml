@@ -99,8 +99,10 @@ runs:
       yq eval -i '.version = "${{ steps.semvers.outputs.patch }}"' Chart.yaml;
       CHART_NAME="$(yq eval '.name' Chart.yaml)";
       CHART_VERSION="$(yq eval '.version' Chart.yaml)";
-      echo ::set-output name=chart_name::${CHART_NAME}
-      echo ::set-output name=chart_version::${CHART_VERSION}
+      # echo ::set-output name=chart_name::${CHART_NAME}
+      echo CHART_NAME=${CHART_NAME} >> $GITHUB_ENV;
+      # echo ::set-output name=chart_version::${CHART_VERSION}
+      echo CHART_VERSION=${CHART_VERSION} >> $GITHUB_ENV;
   - name: "Lint and Publish Helm Chart"
     shell: bash
     run: |
@@ -109,7 +111,7 @@ runs:
       helm repo update --debug;
       helm dependency update --debug;
       helm package --debug .
-      helm push-artifactory ${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz artifactory --skip-reindex --debug
+      helm push-artifactory ${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz artifactory --skip-reindex --debug
   - name: "Push Version Change"
     uses: EndBug/add-and-commit@v9
     with:
@@ -123,6 +125,6 @@ runs:
     uses: ncipollo/release-action@v1
     with:
       allowUpdates: true
-      artifacts: "${{ steps.chart.outputs.chart_name }}-${{ steps.chart.outputs.chart_version }}.tgz"
+      artifacts: "${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz"
       token: ${{ inputs.GITHUB_TOKEN }}
       tag: "${{ steps.semvers.outputs.v_patch }}"
