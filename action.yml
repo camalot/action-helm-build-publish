@@ -98,7 +98,9 @@ runs:
       CHART_NAME="$(yq eval '.name' Chart.yaml)";
       CHART_VERSION="$(yq eval '.version' Chart.yaml)";
       echo CHART_NAME=${CHART_NAME} >> $GITHUB_ENV;
+      echo chart_name=${CHART_NAME} >> $GITHUB_OUTPUT;
       echo CHART_VERSION=${CHART_VERSION} >> $GITHUB_ENV;
+      echo chart_version=${CHART_VERSION} >> $GITHUB_OUTPUT;
   - name: "Lint and Publish Helm Chart"
     shell: bash
     run: |
