@@ -71,7 +71,7 @@ runs:
     with:
       ref: "${{ inputs.target_ref }}"
       token: "${{ inputs.GITHUB_TOKEN }}"
-  - uses: frenck/action-setup-yq@v1.0.1
+  - uses: frenck/action-setup-yq@v1.0.2
   - shell: bash
     id: lint_options
     run: |
