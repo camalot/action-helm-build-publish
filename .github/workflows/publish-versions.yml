@@ -13,7 +13,7 @@ jobs:
     if: github.event.pull_request.merged == true || github.event == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: 'Get Previous tag'
@@ -32,32 +32,32 @@ jobs:
       with:
         string: ${{ steps.semvers.outputs.patch }}
         split-by: '.'
-    - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+    - uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: "v${{ steps.split.outputs._0 }}" # tag name to delete
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: Create the Major Version Tag
-      uses: mathieudutour/github-tag-action@v6.0
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}"
         tag_prefix: 'v'
-    - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+    - uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: "v${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}" # tag name to delete
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create the Major.Minor Version Tag
-      uses: mathieudutour/github-tag-action@v6.0
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.split.outputs._0 }}.${{ steps.split.outputs._1 }}"
         tag_prefix: 'v'
 
     - name: Create the Version Tag
-      uses: mathieudutour/github-tag-action@v6.0
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ github.token }}
         custom_tag: "${{ steps.semvers.outputs.v_patch }}"
