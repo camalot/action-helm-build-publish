@@ -13,7 +13,7 @@ jobs:
     if: github.event.pull_request.merged == true || github.event == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: 'Get Previous tag'
@@ -63,10 +63,31 @@ jobs:
         custom_tag: "${{ steps.semvers.outputs.v_patch }}"
         tag_prefix: ''
 
+    - name: Check if branch main exists
+      id: branch_main_exists
+      uses: camalot/branch-exists@v1
+      with:
+        branch: main
+        github_token: ${{ github.token }}
+    - name: Check if branch master exists
+      id: branch_master_exists
+      uses: camalot/branch-exists@v1
+      with:
+        branch: master
+        github_token: ${{ github.token }}
     - name: Merge develop -> main
       uses: devmasx/merge-branch@v1.4.0
+      if: steps.branch_main_exists.outputs.exists == 'true'
       with:
         type: now
         from_branch: develop
         target_branch: main
+        github_token: ${{ github.token }}
+    - name: Merge develop -> master
+      uses: devmasx/merge-branch@v1.4.0
+      if: steps.branch_master_exists.outputs.exists == 'true'
+      with:
+        type: now
+        from_branch: develop
+        target_branch: master
         github_token: ${{ github.token }}
