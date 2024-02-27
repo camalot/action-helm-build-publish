@@ -1,3 +1,4 @@
+---
 name: Helm Build
 description: "Build, Package, and Publish Helm Charts to Artifactory"
 inputs:
@@ -51,78 +52,78 @@ outputs:
 runs:
   using: "composite"
   steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-      token: "${{ inputs.GITHUB_TOKEN }}"
-  - name: 'Get Previous tag'
-    id: previoustag
-    uses: "WyriHaximus/github-action-get-previous-tag@v1"
-    with:
-      fallback: 0.1.0 # Optional fallback tag to use when no tag can be found
-  - name: 'Get next minor version'
-    id: semvers
-    uses: "WyriHaximus/github-action-next-semvers@v1"
-    with:
-      version: ${{ steps.previoustag.outputs.tag }}
-  - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
-    shell: bash
-  - uses: actions/checkout@v3
-    with:
-      ref: "${{ inputs.target_ref }}"
-      token: "${{ inputs.GITHUB_TOKEN }}"
-  - uses: frenck/action-setup-yq@v1.0.2
-  - shell: bash
-    id: lint_options
-    run: |
-      LINT_STRICT_FLAG=$([[ '${{ inputs.lint_strict }}' == 'true' ]] && echo -n "--strict" || echo -n "")
-      echo LINT_STRICT_FLAG=${LINT_STRICT_FLAG} >> $GITHUB_ENV;
-      TEMPLATE_LINT=$([[ '${{ inputs.template_lint }}' == 'true' ]] && echo -n "template" || echo -n "")
-      echo TEMPLATE_LINT=${TEMPLATE_LINT} >> $GITHUB_ENV;
-  # - name: Update repo and Helm Lint
-  #   shell: bash
-  #   run: |
-  #     helm repo update;
-  #     helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
-  # - name: Helm Lint
-  #   uses: WyriHaximus/github-action-helm3@v2
-  #   with:
-  #     exec: |
-  #       helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
-  - name: Set Chart Version
-    id: chart
-    shell: bash
-    run: |
-      echo "version: ${{ steps.semvers.outputs.patch }}"
-      yq eval -i '.version = "${{ steps.semvers.outputs.patch }}"' Chart.yaml;
-      CHART_NAME="$(yq eval '.name' Chart.yaml)";
-      CHART_VERSION="$(yq eval '.version' Chart.yaml)";
-      echo CHART_NAME=${CHART_NAME} >> $GITHUB_ENV;
-      echo chart_name=${CHART_NAME} >> $GITHUB_OUTPUT;
-      echo CHART_VERSION=${CHART_VERSION} >> $GITHUB_ENV;
-      echo chart_version=${CHART_VERSION} >> $GITHUB_OUTPUT;
-  - name: "Lint and Publish Helm Chart"
-    shell: bash
-    run: |
-      helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin --debug;
-      helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}"  --debug;
-      helm repo update --debug;
-      helm dependency update --debug;
-      helm package --debug .
-      helm push-artifactory ${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz artifactory --skip-reindex --debug
-  - name: "Push Version Change"
-    uses: EndBug/add-and-commit@v9
-    with:
-      add: "Chart.yaml"
-      message: ":robot: Version Updated :robot:"
-      tag: "${{ steps.semvers.outputs.v_patch }} --force"
-      default_author: github_actions
-      committer_name: GitHub Actions
-      committer_email: actions@github.com
-  - name: "Create Release"
-    uses: ncipollo/release-action@v1
-    with:
-      allowUpdates: true
-      artifacts: "${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz"
-      token: ${{ inputs.GITHUB_TOKEN }}
-      tag: "${{ steps.semvers.outputs.v_patch }}"
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: "${{ inputs.GITHUB_TOKEN }}"
+    - name: 'Get Previous tag'
+      id: previoustag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      with:
+        fallback: 0.1.0 # Optional fallback tag to use when no tag can be found
+    - name: 'Get next minor version'
+      id: semvers
+      uses: "WyriHaximus/github-action-next-semvers@v1"
+      with:
+        version: ${{ steps.previoustag.outputs.tag }}
+    - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
+      shell: bash
+    - uses: actions/checkout@v4
+      with:
+        ref: "${{ inputs.target_ref }}"
+        token: "${{ inputs.GITHUB_TOKEN }}"
+    - uses: frenck/action-setup-yq@v1.0.2
+    - shell: bash
+      id: lint_options
+      run: |
+        LINT_STRICT_FLAG=$([[ '${{ inputs.lint_strict }}' == 'true' ]] && echo -n "--strict" || echo -n "")
+        echo LINT_STRICT_FLAG=${LINT_STRICT_FLAG} >> $GITHUB_ENV;
+        TEMPLATE_LINT=$([[ '${{ inputs.template_lint }}' == 'true' ]] && echo -n "template" || echo -n "")
+        echo TEMPLATE_LINT=${TEMPLATE_LINT} >> $GITHUB_ENV;
+    # - name: Update repo and Helm Lint
+    #   shell: bash
+    #   run: |
+    #     helm repo update;
+    #     helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
+    # - name: Helm Lint
+    #   uses: WyriHaximus/github-action-helm3@v2
+    #   with:
+    #     exec: |
+    #       helm ${{ env.TEMPLATE_LINT }} lint ${{ env.LINT_STRICT_FLAG }} ${{ inputs.lint_args }} .
+    - name: Set Chart Version
+      id: chart
+      shell: bash
+      run: |
+        echo "version: ${{ steps.semvers.outputs.patch }}"
+        yq eval -i '.version = "${{ steps.semvers.outputs.patch }}"' Chart.yaml;
+        CHART_NAME="$(yq eval '.name' Chart.yaml)";
+        CHART_VERSION="$(yq eval '.version' Chart.yaml)";
+        echo CHART_NAME=${CHART_NAME} >> $GITHUB_ENV;
+        echo chart_name=${CHART_NAME} >> $GITHUB_OUTPUT;
+        echo CHART_VERSION=${CHART_VERSION} >> $GITHUB_ENV;
+        echo chart_version=${CHART_VERSION} >> $GITHUB_OUTPUT;
+    - name: "Lint and Publish Helm Chart"
+      shell: bash
+      run: |
+        helm plugin install --version ${{ inputs.plugin_version }} https://github.com/belitre/helm-push-artifactory-plugin --debug;
+        helm repo add artifactory "${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_REPO_NAME }}" --username "${{ inputs.ARTIFACTORY_USER}}" --password "${{ inputs.ARTIFACTORY_TOKEN }}"  --debug;
+        helm repo update --debug;
+        helm dependency update --debug;
+        helm package --debug .
+        helm push-artifactory ${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz artifactory --skip-reindex --debug
+    - name: "Push Version Change"
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: "Chart.yaml"
+        message: ":robot: Version Updated :robot:"
+        tag: "${{ steps.semvers.outputs.v_patch }} --force"
+        default_author: github_actions
+        committer_name: GitHub Actions
+        committer_email: actions@github.com
+    - name: "Create Release"
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ env.CHART_NAME }}-${{ env.CHART_VERSION }}.tgz"
+        token: ${{ inputs.GITHUB_TOKEN }}
+        tag: "${{ steps.semvers.outputs.v_patch }}"
