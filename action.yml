@@ -22,10 +22,6 @@ inputs:
     description: "The version of the helm artifactory push plugin"
     default: '1.0.1'
     required: false
-  commit_glob:
-    description: "The glob pattern to use for commit changes"
-    default: "Chart.yaml"
-    required: false
   ARTIFACTORY_URL:
     description: 'The base url to artifactory.'
     required: true
@@ -118,8 +114,7 @@ runs:
     - name: "Push Version Change"
       uses: EndBug/add-and-commit@v9
       with:
-        # add: "Chart.yaml"
-        add: "${{ inputs.commit_glob }}"
+        add: "Chart.yaml"
         message: ":robot: Version Updated :robot:"
         tag: "${{ steps.semvers.outputs.v_patch }} --force"
         default_author: github_actions
